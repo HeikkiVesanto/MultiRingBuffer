@@ -132,37 +132,50 @@ class FeatureBuffer:
 
 
         active_vl = self.iface.activeLayer()
+        if active_vl != None:
+            sel_feats = active_vl.selectedFeatures()
+        else:
+            sel_feats = ''
 
-        buffer_crs_object = self.iface.activeLayer().crs()
-
-        buffer_crs = buffer_crs_object.authid()
-
-        buffer_input_crs = 'Polygon?crs=%s' % buffer_crs
-
-        vl = QgsVectorLayer(buffer_input_crs, "Temp buffers", "memory")
-
-        sel_feats = active_vl.selectedFeatures()
         if len(sel_feats) > 0:
+
+            buffer_crs_object = self.iface.activeLayer().crs()
+
+            buffer_crs = buffer_crs_object.authid()
+
+            buffer_input_crs = 'Polygon?crs=%s' % buffer_crs
+
+            vl = QgsVectorLayer(buffer_input_crs, "Temp buffers", "memory")
             # Create
             vl_pr = vl.dataProvider()
 
+            num_of_rings = 5
+            buffer_distance = 1500
+            segments_to_approximate = 20
+
             # Create empty list for buffer features
             new_buff_feats = []
-
             # Loop through all features, buffer and append to list
-            for each_feat in sel_feats:
-                geom = each_feat.geometry()
-                buff = geom.buffer(1500, 20)
-                new_f = QgsFeature()
-                new_f.setGeometry(buff)
-                new_buff_feats.append(new_f)
+            while num_of_rings > 0:
+                to_buffer = []
+                for each_feat in sel_feats:
+                    geom = each_feat.geometry()
+                    buff = geom.buffer(buffer_distance, segments_to_approximate)
+                    new_f = QgsFeature()
+                    new_f.setGeometry(buff)
+                    to_buffer.append(new_f)
+
+                    new_f_geom = new_f.geometry()
+                    new_f_clipped = new_f_geom.difference(geom)
+                    new_f2 = QgsFeature()
+                    new_f2.setGeometry(new_f_clipped)
+                    new_buff_feats.append(new_f2)
+                sel_feats = to_buffer
+                num_of_rings = num_of_rings - 1
 
             # Add features to mem layer then add to canvas
             vl_pr.addFeatures(new_buff_feats)
             QgsMapLayerRegistry.instance().addMapLayer(vl)
         else:
-            QMessageBox.warning(self.iface.mainWindow(), "Warning", "No features selected.", QMessageBox.Ok)
-
-
-
-
+            QMessageBox.warning(self.iface.mainWindow(), "Warning",
+                                "No features selected.", QMessageBox.Ok)
