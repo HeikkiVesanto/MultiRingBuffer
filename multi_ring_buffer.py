@@ -11,7 +11,6 @@
         email                : heikki.vesanto@thinkwhere.com
         thanks               : Matthew Walsh and Neil Benny
  ***************************************************************************/
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -38,7 +37,6 @@ class MultiRingBuffer:
 
     def __init__(self, iface):
         """Constructor.
-
         :param iface: An interface instance that will be passed to this class
             which provides the hook by which you can manipulate the QGIS
             application at run time.
@@ -75,12 +73,9 @@ class MultiRingBuffer:
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
-
         We implement this ourselves since we do not inherit QObject.
-
         :param message: String for translation.
         :type message: str, QString
-
         :returns: Translated version of message.
         :rtype: QString
         """
@@ -116,7 +111,7 @@ class MultiRingBuffer:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/Multi_Ring_Buffer/icon.png'
+        icon_path = ':/plugins/Multi_Ring_Buffer/icon.svg'
         self.add_action(icon_path, text=self.tr(u'Multi Ring Buffer'), callback=self.run, parent=self.iface.mainWindow())
 
     def unload(self):

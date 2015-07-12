@@ -27,7 +27,7 @@ tags=
 homepage=www.thinkwhere.com
 tracker=
 repository=
-icon=icon.png
+icon=icon.svg
 # experimental flag
 experimental=False
 

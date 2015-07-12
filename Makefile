@@ -39,7 +39,7 @@ PY_FILES = \
 	multi_ring_buffer_dialog.py \
 	__init__.py
 
-EXTRAS = icon.png metadata.txt
+EXTRAS = icon.svg metadata.txt
 
 COMPILED_RESOURCE_FILES = resources_rc.py
 
