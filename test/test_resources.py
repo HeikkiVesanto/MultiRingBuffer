@@ -31,7 +31,7 @@ class FeatureBufferDialogTest(unittest.TestCase):
 
     def test_icon_png(self):
         """Test we can click OK."""
-        path = ':/plugins/FeatureBuffer/icon.png'
+        path = ':/plugins/Multi_Ring_Buffer/icon.png'
         icon = QIcon(path)
         self.assertFalse(icon.isNull())
 

@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/FeatureBuffer" >
+    <qresource prefix="/plugins/Multi_Ring_Buffer" >
         <file>icon.png</file>
     </qresource>
 </RCC>

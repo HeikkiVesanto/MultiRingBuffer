@@ -1,12 +1,12 @@
 #/***************************************************************************
-# FeatureBuffer
+# MultiRingBuffer
 #
 # A simple plugin to buffer selected features
 #							 -------------------
 #		begin				: 2014-10-23
 #		git sha				: $Format:%H$
-#		copyright			: (C) 2014 by thinkWhere
-#		email				: matthew.walsh@thinkwhere.com
+#		copyright           : (C) 2014 by Heikki Vesanto
+#		email				: heikki.vesanto@thinkwhere.com
 # ***************************************************************************/
 #
 #/***************************************************************************
@@ -29,14 +29,14 @@ LOCALES = af
 # translation
 SOURCES = \
 	__init__.py \
-	feature_buffer.py \
-	feature_buffer_dialog.py
+	multi_ring_buffer.py \
+	multi_ring_buffer_dialog.py
 
-PLUGINNAME = FeatureBuffer
+PLUGINNAME = Multi_Ring_Buffer
 
 PY_FILES = \
-	feature_buffer.py \
-	feature_buffer_dialog.py \
+	multi_ring_buffer.py \
+	multi_ring_buffer_dialog.py \
 	__init__.py
 
 EXTRAS = icon.png metadata.txt

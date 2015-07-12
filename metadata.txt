@@ -7,12 +7,12 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Feature Buffer
+name=Multi Ring Buffer
 qgisMinimumVersion=2.0
-description=A simple plugin to buffer selected features
+description=Create multiple buffer rings around a features/set of features. Supply a number of rings and buffer distance. Works only selected layer and creates "donut" rings, not including the buffered feature.
 version=0.1
-author=thinkWhere
-email=matthew.walsh@thinkwhere.com
+author=Heikki Vesanto
+email=heikki.vesanto@thinkwhere.com
 
 # End of mandatory metadata
 

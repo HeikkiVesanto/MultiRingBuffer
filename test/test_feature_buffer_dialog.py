@@ -16,7 +16,7 @@ import unittest
 
 from PyQt4.QtGui import QDialogButtonBox, QDialog
 
-from feature_buffer_dialog import FeatureBufferDialog
+from multi_ring_buffer_dialog import FeatureBufferDialog
 
 from utilities import get_qgis_app
 QGIS_APP = get_qgis_app()
