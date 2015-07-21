@@ -20,6 +20,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+ pyuic4 -o multi_ring_buffer_dialog_base.py multi_ring_buffer_dialog_base.ui
 """
 
 import os

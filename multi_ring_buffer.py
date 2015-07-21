@@ -216,11 +216,11 @@ class MultiRingBuffer:
             vl.updateFields()
             # Switch between sequential and central buffer styles.
             # A toggle was added, but it seems too complex of a question for most users.
-            buffer_style = "sequential"
-            #if self.dlg.ui.central.isChecked():
-            #    buffer_style = "central"
-            #else:
-            #    buffer_style = "sequential"
+            # buffer_style = "sequential"
+            if self.dlg.ui.central_style.isChecked():
+                buffer_style = "central"
+            else:
+                buffer_style = "sequential"
 
             # Inputs from the dialog:
             dissolve_test = self.dlg.ui.dissovle_button_2.isChecked()
