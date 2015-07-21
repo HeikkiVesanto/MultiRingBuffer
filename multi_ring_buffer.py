@@ -232,10 +232,10 @@ class MultiRingBuffer:
             num_of_rings = self.dlg.ui.numberOfRings.value()
             buffer_distance = self.dlg.ui.bufferDistance.value()
             use_sel_feats_test = self.dlg.ui.selectedfeats.isChecked()
-            if use_sel_feats_test == 0:
-                use_sel_feats = 0
-            else:
+            if use_sel_feats_test == 1:
                 use_sel_feats = 1
+            else:
+                use_sel_feats = 0
 
             # We use "sel_feats" to populate a box in the dialog, but if all features wanted, we need to re-populate it
             # with all the features in the layer.
