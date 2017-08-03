@@ -198,22 +198,10 @@ class MultiRingBuffer:
             QMessageBox.warning(self.iface.mainWindow(), "Warning",
                 "Could not process layer.", QMessageBox.Ok)
             result = 0
-
         # If ok was clicked in the dialog, continue:
         if result == 1:
 
-            buffer_crs_object = self.iface.activeLayer().crs()
-            # Check the current CRS of the layer
-            buffer_crs = buffer_crs_object.authid()
-            # Apply that to the created layer if recognised
-            buffer_input_crs = "Polygon?crs=%s" % buffer_crs
-            # Create empty memory vector layer for buffers
-            layer_name = active_vl.name()
-            vl = QgsVectorLayer(buffer_input_crs, "%s_MultiRingBuffer" % layer_name, "memory")
-            vl_pr = vl.dataProvider()
-            # Distance feature for buffer distance
-            vl_pr.addAttributes([QgsField("distance", QVariant.String)])
-            vl.updateFields()
+
             # Switch between sequential and central buffer styles.
             # A toggle was added, but it seems too complex of a question for most users.
             # buffer_style = "sequential"
@@ -236,6 +224,35 @@ class MultiRingBuffer:
                 use_sel_feats = 1
             else:
                 use_sel_feats = 0
+
+            add_old_attributes = 1
+
+            # Create data provider for input layer to get fields.
+            in_prov = active_vl.dataProvider()
+            in_fields = in_prov.fields()
+
+            buffer_crs_object = self.iface.activeLayer().crs()
+            # Check the current CRS of the layer
+            buffer_crs = buffer_crs_object.authid()
+            # Apply that to the created layer if recognised
+            buffer_input_crs = "Polygon?crs=%s" % buffer_crs
+            # Create empty memory vector layer for buffers
+            layer_name = active_vl.name()
+            vl = QgsVectorLayer(buffer_input_crs,
+                                "%s_MultiRingBuffer" % layer_name, "memory")
+            vl_pr = vl.dataProvider()
+
+            # Copy old attributes
+            if add_old_attributes == 1 and dissolve_bool == 0:
+                fields_to_add = []
+                for field in in_fields:
+                    fields_to_add.append(field)
+                vl_pr.addAttributes(fields_to_add)
+                vl.updateFields()
+            # Distance feature for buffer distance
+            vl_pr.addAttributes([QgsField("distance", QVariant.String)])
+            vl.updateFields()
+
 
             # We use "sel_feats" to populate a box in the dialog, but if all features wanted, we need to re-populate it
             # with all the features in the layer.
@@ -265,9 +282,11 @@ class MultiRingBuffer:
             i = 0
 
             # Run if there are features in the layer
-            if len(sel_feats) > 0:
+            if len(sel2feats) > 0:
                 # Buffer a feature then buffer the buffer (used)
                 if buffer_style == "sequential":
+                    num_attributes = len(sel2feats[0].attributes())
+                    print num_attributes
                     new_buff_feats = []
                     distance = buffer_distance
                     while num_of_rings > 0:
@@ -277,18 +296,29 @@ class MultiRingBuffer:
                             buff = geom.buffer(buffer_distance, segments_to_approximate)
                             new_f = QgsFeature()
                             new_f.setGeometry(buff)
-                            to_buffer.append(new_f)
-
                             new_f_geom = new_f.geometry()
                             new_f_clipped = new_f_geom.difference(geom)
                             new_f2 = QgsFeature()
                             new_f2.setGeometry(new_f_clipped)
-                            new_f2.setAttributes([distance])
+                            if add_old_attributes == 1 and dissolve_bool == 0:
+                                new_attributes = []
+                                for attributes in each_feat.attributes():
+                                    new_attributes.append(attributes)
+                                if len(new_attributes) > num_attributes:
+                                    # Need to delete the distance field from
+                                    # the previous run.
+                                    new_attributes = new_attributes[:-1]
+                                new_attributes.append(distance)
+                                new_f2.setAttributes(new_attributes)
+                                new_f.setAttributes(new_attributes)
+                            else:
+                                new_f2.setAttributes([distance])
                             new_buff_feats.append(new_f2)
-                            i = i + 1
+                            i += 1
+                            to_buffer.append(new_f)
                             progress.setValue(i + 1)
                         sel2feats = to_buffer
-                        num_of_rings = num_of_rings - 1
+                        num_of_rings -= 1
                         distance = distance + buffer_distance
                     vl_pr.addFeatures(new_buff_feats)
                     QgsMapLayerRegistry.instance().addMapLayer(vl)
@@ -308,13 +338,22 @@ class MultiRingBuffer:
                             new_f = QgsFeature()
                             new_f_clipped = buff.difference(to_clip)
                             new_f.setGeometry(new_f_clipped)
-                            new_f.setAttributes([buffer_distance])
+
+                            if add_old_attributes == 1 and dissolve_bool == 0:
+                                new_attributes = []
+                                for attributes in each_feat.attributes():
+                                    new_attributes.append(attributes)
+                                new_attributes.append(buffer_distance)
+                                new_f.setAttributes(new_attributes)
+                            else:
+                                new_f.setAttributes([buffer_distance])
+
                             buffered.append(new_f)
 
                             buffer_distance = buffer_distance + orig_buffer_distance
                             num_to_buffer = num_to_buffer - 1
                             to_clip = to_clip.combine(buff)
-                            i = i + 1
+                            i += 1
                             progress.setValue(i + 1)
 
                     vl_pr.addFeatures(buffered)
