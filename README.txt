@@ -6,7 +6,7 @@ Supply a number of rings and buffer distance.
 
 Works only on layer selected in the layers panel.
 
-version 0.3
+version 0.4
 author Heikki Vesanto
 email heikki.vesanto@gmail.com
 
