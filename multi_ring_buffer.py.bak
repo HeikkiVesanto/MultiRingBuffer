@@ -20,22 +20,19 @@
  *                                                                         *
  ***************************************************************************/
 """
-from __future__ import print_function
-from __future__ import absolute_import
-from builtins import object
-from qgis.PyQt.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant, Qt
-from qgis.PyQt.QtWidgets import QAction, QMessageBox, QProgressBar
-from qgis.PyQt.QtGui import QIcon
+from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QVariant, Qt
+from PyQt4.QtGui import QAction, QIcon, QMessageBox, QProgressBar
 from qgis.core import *
 # Initialize Qt resources from file resources.py
-# from . import icon_rc
-from . import resources_rc
+import icon_rc
+import resources_rc
 # Import the code for the dialog
-from .multi_ring_buffer_dialog import MultiRingBufferDialog
+from multi_ring_buffer_dialog import MultiRingBufferDialog
+from PyQt4.QtCore import *
 import os.path
 import time
 
-class MultiRingBuffer(object):
+class MultiRingBuffer:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -289,8 +286,7 @@ class MultiRingBuffer(object):
                 # Buffer a feature then buffer the buffer (used)
                 if buffer_style == "sequential":
                     num_attributes = len(sel2feats[0].attributes())
-                    # fix_print_with_import
-                    print(num_attributes)
+                    print num_attributes
                     new_buff_feats = []
                     distance = buffer_distance
                     while num_of_rings > 0:
@@ -325,7 +321,7 @@ class MultiRingBuffer(object):
                         num_of_rings -= 1
                         distance = distance + buffer_distance
                     vl_pr.addFeatures(new_buff_feats)
-                    QgsProject.instance().addMapLayer(vl)
+                    QgsMapLayerRegistry.instance().addMapLayer(vl)
 
                 # Sequential buffers of the original feature with larger buffers
                 if buffer_style == "central":
@@ -361,6 +357,6 @@ class MultiRingBuffer(object):
                             progress.setValue(i + 1)
 
                     vl_pr.addFeatures(buffered)
-                    QgsProject.instance().addMapLayer(vl)
+                    QgsMapLayerRegistry.instance().addMapLayer(vl)
 
             self.iface.messageBar().clearWidgets()

@@ -22,19 +22,17 @@
  ***************************************************************************/
  pyuic4 -o multi_ring_buffer_dialog_base.py multi_ring_buffer_dialog_base.ui
 """
-from __future__ import absolute_import
 
 import os
 
-from qgis.PyQt import QtGui, uic
-from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox
-from .multi_ring_buffer_dialog_base import Ui_Dialog
+from PyQt4 import QtGui, uic
+from multi_ring_buffer_dialog_base import Ui_Dialog
 
 
-class MultiRingBufferDialog(QDialog):
+class MultiRingBufferDialog(QtGui.QDialog):
     def __init__(self):
         """Constructor."""
-        QDialog.__init__(self)
+        QtGui.QDialog.__init__(self)
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
