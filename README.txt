@@ -2,11 +2,9 @@ Multi Ring Buffer
 
 Creates multiple buffer rings around a features/set of features.
 
-Supply a number of rings and buffer distance.
+Supply a number of rings and buffer distance, or list of distances comma separated.
 
-Works only on layer selected in the layers panel.
-
-version 0.4
+version 1
 author Heikki Vesanto
 email heikki.vesanto@gmail.com
 

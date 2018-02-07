@@ -1,9 +1,9 @@
 @ECHO OFF
-@RD /S /Q .\MultiRingBuffer
-mkdir MultiRingBuffer
-xcopy /s help .\MultiRingBuffer\help\
-xcopy *.py .\MultiRingBuffer\
-xcopy *.svg .\MultiRingBuffer\
-xcopy *.txt .\MultiRingBuffer\
-xcopy *.qrc .\MultiRingBuffer\
-xcopy *.ui .\MultiRingBuffer\
+@RD /S /Q .\Multi_Ring_Buffer
+mkdir Multi_Ring_Buffer
+xcopy /s help .\Multi_Ring_Buffer\help\
+xcopy *.py .\Multi_Ring_Buffer\
+xcopy *.svg .\Multi_Ring_Buffer\
+xcopy *.txt .\Multi_Ring_Buffer\
+xcopy *.qrc .\Multi_Ring_Buffer\
+xcopy *.ui .\Multi_Ring_Buffer\

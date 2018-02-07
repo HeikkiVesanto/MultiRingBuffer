@@ -20,43 +20,74 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
- pyuic4 -o multi_ring_buffer_dialog_base.py multi_ring_buffer_dialog_base.ui
 """
-from __future__ import absolute_import
 
 import os
 
-from qgis.PyQt import QtGui, uic
-from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox
-from .multi_ring_buffer_dialog_base import Ui_Dialog
+from PyQt5 import uic
+from PyQt5 import QtWidgets
+
+from qgis.core import QgsMapLayerProxyModel
+
+FORM_CLASS, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), 'multi_ring_buffer_dialog_base.ui'))
 
 
-class MultiRingBufferDialog(QDialog):
-    def __init__(self):
+class MultiRingBufferDialog(QtWidgets.QDialog, FORM_CLASS):
+    def __init__(self, parent=None):
         """Constructor."""
-        QDialog.__init__(self)
+        super(MultiRingBufferDialog, self).__init__(parent)
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
-        self.ui = Ui_Dialog()
-        self.ui.setupUi(self)
-        self.ui.buttonBox.rejected.connect(self.reject)
-        self.ui.buttonBox.accepted.connect(self.accept)
+        self.setupUi(self)
+        self.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
+        self.radioDistances.toggled.connect(self.commaSelected)
+        self.radioRings.toggled.connect(self.ringSelected)
+        self.radioNoDonut.toggled.connect(self.regBufferSelected)
+        self.radioDonut.toggled.connect(self.donutSelected)
+        self.sequential_style.toggled.connect(self.seqSelected)
+        self.central_style.toggled.connect(self.centSelected)
 
-    def populatedialogue(self, layername):
-        self.ui.buffer_layer_name.clear()
-        self.ui.buffer_layer_name.setText(layername)
+        self.mMapLayerComboBox.layerChanged.connect(self.isSomethingSelected)
 
-    def selectedfeats(self, yes):
-        if yes == 1:
-            self.ui.selectedfeats.setEnabled(1)
-            self.ui.selectedfeats.setCheckable(1)
-            self.ui.selectedfeats.setChecked(1)
-            self.ui.selectedfeats.setToolTip("Use only selected features?")
+    def seqSelected(self):
+        self.radioNoDonut.setEnabled(0)
+
+    def centSelected(self):
+        self.radioNoDonut.setEnabled(1)
+
+    def commaSelected(self):
+        self.distancesCommaSep.setEnabled(1)
+        self.bufferDistance.setEnabled(0)
+        self.numberOfRings.setEnabled(0)
+        self.sequential_style.setChecked(0)
+        self.central_style.setChecked(1)
+        self.sequential_style.setEnabled(0)
+
+    def ringSelected(self):
+        self.bufferDistance.setEnabled(1)
+        self.numberOfRings.setEnabled(1)
+        self.distancesCommaSep.setEnabled(0)
+        self.sequential_style.setEnabled(1)
+
+    def regBufferSelected(self):
+        self.sequential_style.setChecked(0)
+        self.central_style.setChecked(1)
+        self.sequential_style.setEnabled(0)
+
+    def donutSelected(self):
+        self.sequential_style.setEnabled(1)
+
+    def isSomethingSelected(self):
+        vlayer = self.mMapLayerComboBox.currentLayer()
+        if not vlayer.selectedFeatures():
+            self.selectedfeats.setChecked(0)
+            self.selectedfeats.setEnabled(0)
+            self.selectedfeats.setToolTip("No features selected in layer")
         else:
-            self.ui.selectedfeats.setChecked(0)
-            self.ui.selectedfeats.setCheckable(0)
-            self.ui.selectedfeats.setToolTip("No features selected")
-            self.ui.selectedfeats.setEnabled(0)
+            self.selectedfeats.setEnabled(1)
+            self.selectedfeats.setToolTip("Use only selected features")
+            # self.selectedfeats.setChecked(1)
