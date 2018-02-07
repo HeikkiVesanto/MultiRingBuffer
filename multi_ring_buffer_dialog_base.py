@@ -208,7 +208,7 @@ class Ui_Dialog(object):
         self.bufferDistance.setToolTip(_translate("Dialog", "Buffer distance in your selected layers CRS units"))
         self.label_3_buf.setText(_translate("Dialog", "Number of Rings:"))
         self.numberOfRings.setToolTip(_translate("Dialog", "Number of rings."))
-        self.radioDistances.setToolTip(_translate("Dialog", "Example: 10,20,30,40,100"))
+        self.radioDistances.setToolTip(_translate("Dialog", "Raw buffer distances"))
         self.radioDistances.setText(_translate("Dialog", "Distances (comma seperated)"))
         self.distancesCommaSep.setText(_translate("Dialog", "10,20,30"))
         self.label_2.setText(_translate("Dialog", "Segments to Approximate"))
