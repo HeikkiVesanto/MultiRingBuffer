@@ -253,6 +253,7 @@ class MultiRingBuffer:
         if result == 1:
             buffering_layer = self.dlg.mMapLayerComboBox.currentLayer()
 
+            sel_feats = []
             # Either buffer with all features or just selected ones
             if self.dlg.selectedfeats.isChecked():
                 sel_feats = buffering_layer.selectedFeatures()
@@ -353,7 +354,7 @@ class MultiRingBuffer:
             vl.updateFields()
 
             # Dissolve the features if selected.
-            if dissolve_bool == 1:
+            if dissolve_bool == 1 and result == 1::
                 sel2feats = []
                 add_feat = self.dissolve(sel_feats)
                 if copy_atts == 1:
