@@ -29,7 +29,6 @@ from .resources_rc import *
 # Import the code for the dialog
 from .multi_ring_buffer_dialog import MultiRingBufferDialog
 import os.path
-from decimal import *
 
 from qgis.core import *
 
@@ -201,7 +200,6 @@ class MultiRingBuffer:
             # Need to create empty geometry to hold the dissolved features, we use the first feature to seed it.
             # Combine require a non-empty geometry to work (I could not get it to work).
             feat = feats[0]
-            dissolved_geom = QgsGeometry()
             dissolved_geom = feat.geometry()
 
             # Progress bar for dissolving
@@ -209,7 +207,7 @@ class MultiRingBuffer:
             progress = QProgressBar()
             progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
             progressMessageBar.layout().addWidget(progress)
-            self.iface.messageBar().pushWidget(progressMessageBar, self.iface.messageBar().INFO)
+            self.iface.messageBar().pushWidget(progressMessageBar)
             maximum_progress = len(feats)
             progress.setMaximum(maximum_progress)
             i = 0
@@ -226,7 +224,7 @@ class MultiRingBuffer:
             return return_f
         else:
             QMessageBox.warning(self.iface.mainWindow(), "Warning",
-                "No features to dissolve.", QMessageBox.Ok)
+                                "No features to dissolve.", QMessageBox.Ok)
             return input_feats
 
     def run(self):
@@ -246,11 +244,11 @@ class MultiRingBuffer:
             result = self.dlg.exec_()
         else:
             QMessageBox.warning(self.iface.mainWindow(), "Warning",
-                                "No vecor layers.", QMessageBox.Ok)
+                                "No vector layers.", QMessageBox.Ok)
             result = 0
             # See if OK was pressed
 
-        if result == 1:
+        if result == 1 and self.dlg.mMapLayerComboBox.currentLayer():
             buffering_layer = self.dlg.mMapLayerComboBox.currentLayer()
 
             sel_feats = []
@@ -308,7 +306,8 @@ class MultiRingBuffer:
                 # Parse csv into list of numbers
                 buffer_csv = buffer_csv.split(",")
                 try:
-                    buffer_csv = [float(i) for i in buffer_csv]
+                    # Remove negatives
+                    buffer_csv = [float(i) for i in buffer_csv if float(i) >= 0]
                     run_csv_buffer = True
                     # Sort list small to large, or large to small if not disolving
                     if clipper:
@@ -327,7 +326,7 @@ class MultiRingBuffer:
             in_prov = buffering_layer.dataProvider()
             in_fields = in_prov.fields()
 
-            buffer_crs_object = self.iface.activeLayer().crs()
+            buffer_crs_object = buffering_layer.crs()
             # Check the current CRS of the layer
             buffer_crs = buffer_crs_object.authid()
             # Apply that to the created layer if recognised
@@ -354,7 +353,7 @@ class MultiRingBuffer:
             vl.updateFields()
 
             # Dissolve the features if selected.
-            if dissolve_bool == 1 and result == 1::
+            if dissolve_bool == 1 and result == 1:
                 sel2feats = []
                 add_feat = self.dissolve(sel_feats)
                 if copy_atts == 1:
@@ -374,7 +373,7 @@ class MultiRingBuffer:
                 progress = QProgressBar()
                 progress.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
                 progressMessageBar.layout().addWidget(progress)
-                self.iface.messageBar().pushWidget(progressMessageBar, self.iface.messageBar().INFO)
+                self.iface.messageBar().pushWidget(progressMessageBar)
                 if run_csv_buffer:
                     maximum_progress = len(sel2feats) * len(buffer_csv)
                 else:
@@ -388,9 +387,9 @@ class MultiRingBuffer:
                     for each_feat in sel2feats:
                         to_clip = each_feat.geometry()
 
-                        for j in buffer_csv:
+                        for dist in buffer_csv:
                             geom = each_feat.geometry()
-                            buff = self.run_buffer(geom, j, segments_to_approximate)
+                            buff = self.run_buffer(geom, dist, segments_to_approximate)
                             new_f = QgsFeature()
                             if clipper:
                                 new_f_clipped = buff.difference(to_clip)
@@ -403,10 +402,10 @@ class MultiRingBuffer:
                                 new_attributes = []
                                 for attributes in each_feat.attributes():
                                     new_attributes.append(attributes)
-                                new_attributes.append(i)
+                                new_attributes.append(dist)
                                 new_f.setAttributes(new_attributes)
                             else:
-                                new_f.setAttributes([j])
+                                new_f.setAttributes([dist])
 
                             buffered.append(new_f)
 

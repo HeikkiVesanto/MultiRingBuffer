@@ -43,7 +43,7 @@ class MultiRingBufferDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
-        self.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
+        self.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.HasGeometry)
         self.radioDistances.toggled.connect(self.commaSelected)
         self.radioRings.toggled.connect(self.ringSelected)
         self.radioNoDonut.toggled.connect(self.regBufferSelected)
@@ -83,11 +83,14 @@ class MultiRingBufferDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def isSomethingSelected(self):
         vlayer = self.mMapLayerComboBox.currentLayer()
-        if not vlayer.selectedFeatures():
-            self.selectedfeats.setChecked(0)
-            self.selectedfeats.setEnabled(0)
-            self.selectedfeats.setToolTip("No features selected in layer")
+        if vlayer is not None:
+            if not vlayer.selectedFeatures():
+                self.selectedfeats.setChecked(0)
+                self.selectedfeats.setEnabled(0)
+                self.selectedfeats.setToolTip("No features selected in layer")
+            else:
+                self.selectedfeats.setEnabled(1)
+                self.selectedfeats.setToolTip("Use only selected features")
+                # self.selectedfeats.setChecked(1)
         else:
-            self.selectedfeats.setEnabled(1)
-            self.selectedfeats.setToolTip("Use only selected features")
-            # self.selectedfeats.setChecked(1)
+            pass
